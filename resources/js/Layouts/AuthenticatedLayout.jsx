@@ -1,4 +1,5 @@
 import Dropdown from '@/Components/Dropdown';
+import FlashToasts from '@/Components/FlashToasts';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -11,6 +12,8 @@ export default function AuthenticatedLayout({ header, children }) {
 
     return (
         <div className="relative w-full min-h-screen overflow-x-hidden bg-gradient-to-br from-[#1a0500] via-[#3a1000] to-[#6a2000]">
+
+            <FlashToasts />
 
             {/* Fixed orbs — behind everything */}
             <div className="orb w-[700px] h-[700px] bg-brand-red top-[-250px] left-[-250px]" />

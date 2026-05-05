@@ -1,4 +1,5 @@
 import Loader from '@/Components/Loader';
+import VisitDetailsModal from '@/Components/VisitDetailsModal';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -8,18 +9,6 @@ function getCurrentPosition() {
         if (!navigator.geolocation) { reject(new Error('Geolocation is not supported by your browser.')); return; }
         navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
     });
-}
-
-function FlashBanner() {
-    const { flash } = usePage().props;
-    if (!flash?.success && !flash?.error) return null;
-    const ok = !!flash.success;
-    return (
-        <div className={`mb-5 glass rounded-2xl px-5 py-3.5 text-sm font-medium flex items-center gap-3 ${ok ? 'border-green-400/30 text-green-300' : 'border-red-400/30 text-red-300'}`}>
-            <span className={`h-2 w-2 rounded-full flex-shrink-0 ${ok ? 'bg-green-400' : 'bg-red-400'}`} />
-            {flash.success || flash.error}
-        </div>
-    );
 }
 
 function AttendanceCard({ activeAttendance }) {
@@ -133,11 +122,15 @@ function CustomerVisitForm() {
 }
 
 function RecentVisits({ visits }) {
+    const [selected, setSelected] = useState(null);
     return (
         <div className="glass-card relative rounded-3xl overflow-hidden">
             <div className="h-1 w-full bg-gradient-to-r from-brand-red via-brand-coral to-brand-peach" />
             <div className="p-5 sm:p-7">
-                <h3 className="text-base font-bold text-white mb-5">Recent Visits</h3>
+                <div className="flex items-center justify-between gap-3 mb-5">
+                    <h3 className="text-base font-bold text-white">Recent Visits</h3>
+                    <p className="text-xs text-white/35">{visits.length} total</p>
+                </div>
                 {visits.length === 0 ? (
                     <div className="text-center py-12">
                         <div className="mx-auto mb-3 h-12 w-12 rounded-2xl glass flex items-center justify-center">
@@ -148,41 +141,75 @@ function RecentVisits({ visits }) {
                         <p className="text-sm text-white/30">No visits recorded yet.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-white/10">
-                                    <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Customer</th>
-                                    <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Remarks</th>
-                                    <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Time</th>
-                                    <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Location</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {visits.map((v) => (
-                                    <tr key={v.id} className="hover:bg-white/5 transition">
-                                        <td className="py-3 pr-4 font-semibold text-white">{v.customer_name}</td>
-                                        <td className="py-3 pr-4 text-white/45 max-w-xs truncate">{v.remarks || '—'}</td>
-                                        <td className="py-3 pr-4 text-white/35 whitespace-nowrap text-xs">{new Date(v.created_at).toLocaleString()}</td>
-                                        <td className="py-3">
-                                            {v.lat && v.lng ? (
-                                                <a href={`https://www.google.com/maps?q=${v.lat},${v.lng}`} target="_blank" rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 glass rounded-full px-3 py-1 text-xs font-medium text-brand-cream hover:bg-white/15 transition">
-                                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                    View
-                                                </a>
-                                            ) : <span className="text-white/20">—</span>}
-                                        </td>
+                    <>
+                        {/* Mobile: clean cards + popup details */}
+                        <div className="sm:hidden space-y-3">
+                            {visits.map((v) => (
+                                <button
+                                    key={v.id}
+                                    type="button"
+                                    onClick={() => setSelected(v)}
+                                    className="w-full text-left glass rounded-2xl border border-white/10 px-4 py-3 hover:bg-white/10 transition"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-semibold text-white truncate">{v.customer_name}</p>
+                                            <p className="mt-0.5 text-xs text-white/40">{new Date(v.created_at).toLocaleString()}</p>
+                                        </div>
+                                        <span className="shrink-0 rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/65">
+                                            View
+                                        </span>
+                                    </div>
+                                    <p className="mt-2 text-sm text-white/55 overflow-hidden max-h-10">
+                                        {v.remarks || 'No remarks'}
+                                    </p>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Desktop: clearer table + View action */}
+                        <div className="hidden sm:block overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-white/10">
+                                        <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Customer</th>
+                                        <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Remarks</th>
+                                        <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Time</th>
+                                        <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wide text-white/35">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {visits.map((v) => (
+                                        <tr key={v.id} className="hover:bg-white/5 transition">
+                                            <td className="py-3 pr-4 font-semibold text-white whitespace-nowrap">{v.customer_name}</td>
+                                            <td className="py-3 pr-4 text-white/50 max-w-md">
+                                                <span className="block max-w-md truncate">{v.remarks || '—'}</span>
+                                            </td>
+                                            <td className="py-3 pr-4 text-white/35 whitespace-nowrap text-xs">{new Date(v.created_at).toLocaleString()}</td>
+                                            <td className="py-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setSelected(v)}
+                                                    className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-semibold text-brand-cream hover:bg-white/15 transition"
+                                                >
+                                                    Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
             </div>
+
+            <VisitDetailsModal
+                show={!!selected}
+                onClose={() => setSelected(null)}
+                visit={selected}
+                variant="employee"
+            />
         </div>
     );
 }
@@ -208,7 +235,6 @@ export default function EmployeeDashboard({ activeAttendance, recentVisits }) {
             <Head title="Employee Dashboard" />
             <div className="py-6 sm:py-8">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
-                    <FlashBanner />
                     <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
                         <AttendanceCard activeAttendance={activeAttendance} />
                         <CustomerVisitForm />
