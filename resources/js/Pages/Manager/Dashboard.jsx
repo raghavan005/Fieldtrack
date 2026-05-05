@@ -19,10 +19,10 @@ function StatCard({ label, value, gradient, icon }) {
     return (
         <div className="glass-card relative rounded-3xl overflow-hidden">
             <div className={`h-1 w-full ${gradient}`} />
-            <div className="p-6 flex items-center justify-between">
+            <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-widest text-white/40">{label}</p>
-                    <p className="mt-1 text-4xl font-extrabold text-white">{value}</p>
+                    <p className="mt-1 text-3xl sm:text-4xl font-extrabold text-white leading-none">{value}</p>
                 </div>
                 <div className="h-12 w-12 rounded-2xl glass flex items-center justify-center">{icon}</div>
             </div>
@@ -275,8 +275,8 @@ export default function ManagerDashboard({ clockedInEmployees, allEmployeeLocati
             }
         >
             <Head title="Manager Dashboard" />
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-5">
+            <div className="py-6 sm:py-8">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
                     <FlashBanner />
 
                     {/* Stats */}
@@ -299,7 +299,7 @@ export default function ManagerDashboard({ clockedInEmployees, allEmployeeLocati
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
                         <div className="lg:col-span-2 glass-card relative rounded-3xl overflow-hidden">
                             <div className="h-1 w-full bg-gradient-to-r from-brand-red to-brand-coral" />
-                            <div className="p-6">
+                            <div className="p-5 sm:p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-base font-bold text-white">Live Employee Locations</h3>
                                     <span className="flex items-center gap-1.5 text-xs text-white/30">
@@ -313,7 +313,7 @@ export default function ManagerDashboard({ clockedInEmployees, allEmployeeLocati
 
                         <div className="glass-card relative rounded-3xl overflow-hidden">
                             <div className="h-1 w-full bg-gradient-to-r from-brand-coral to-brand-cream" />
-                            <div className="p-6">
+                            <div className="p-5 sm:p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-base font-bold text-white">Clocked In</h3>
                                     <span className="glass rounded-full px-2.5 py-0.5 text-xs font-bold text-brand-coral">{clockedInCount}</span>
@@ -326,7 +326,7 @@ export default function ManagerDashboard({ clockedInEmployees, allEmployeeLocati
                     {/* Visit history */}
                     <div className="glass-card relative rounded-3xl overflow-hidden">
                         <div className="h-1 w-full bg-gradient-to-r from-brand-red via-brand-coral to-brand-peach" />
-                        <div className="p-6">
+                        <div className="p-5 sm:p-6">
                             <CustomerVisitsTable visits={customerVisits} />
                         </div>
                     </div>

@@ -43,7 +43,7 @@ function AttendanceCard({ activeAttendance }) {
     return (
         <div className="glass-card relative rounded-3xl overflow-hidden">
             <div className={`h-1 w-full ${isClockedIn ? 'bg-gradient-to-r from-green-400 to-emerald-400' : 'bg-gradient-to-r from-white/15 to-white/5'}`} />
-            <div className="p-7">
+            <div className="p-5 sm:p-7">
                 <div className="flex items-center justify-between mb-5">
                     <div>
                         <h3 className="text-base font-bold text-white">Attendance</h3>
@@ -99,7 +99,7 @@ function CustomerVisitForm() {
     return (
         <div className="glass-card relative rounded-3xl overflow-hidden">
             <div className="h-1 w-full bg-gradient-to-r from-brand-coral to-brand-cream" />
-            <div className="p-7">
+            <div className="p-5 sm:p-7">
                 <div className="mb-5">
                     <h3 className="text-base font-bold text-white">Log Customer Visit</h3>
                     <p className="text-xs text-white/40 mt-0.5">Location captured automatically on submit</p>
@@ -136,7 +136,7 @@ function RecentVisits({ visits }) {
     return (
         <div className="glass-card relative rounded-3xl overflow-hidden">
             <div className="h-1 w-full bg-gradient-to-r from-brand-red via-brand-coral to-brand-peach" />
-            <div className="p-7">
+            <div className="p-5 sm:p-7">
                 <h3 className="text-base font-bold text-white mb-5">Recent Visits</h3>
                 {visits.length === 0 ? (
                     <div className="text-center py-12">
@@ -206,10 +206,10 @@ export default function EmployeeDashboard({ activeAttendance, recentVisits }) {
             }
         >
             <Head title="Employee Dashboard" />
-            <div className="py-8">
-                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-5">
+            <div className="py-6 sm:py-8">
+                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
                     <FlashBanner />
-                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
                         <AttendanceCard activeAttendance={activeAttendance} />
                         <CustomerVisitForm />
                     </div>

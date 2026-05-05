@@ -95,10 +95,10 @@ export default function AuthenticatedLayout({ header, children }) {
                 )}
             </nav>
 
-            {/* Page header */}
+            {/* Page header (content, not a second topbar) */}
             {header && (
-                <div className="relative z-10 glass-dark border-b border-white/10">
-                    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+                <div className="relative z-10">
+                    <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
                         {header}
                     </div>
                 </div>
