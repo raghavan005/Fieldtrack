@@ -1,58 +1,208 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FieldTrack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A field employee tracking and customer visit management system built with Laravel, Inertia.js, and React.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Employee attendance tracking with geolocation
+- Customer visit logging
+- Manager dashboard with analytics
+- Employee dashboard for daily tasks
+- Real-time location tracking
+- Role-based access control (Manager/Employee)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel 13 (PHP 8.4)
+- **Frontend:** React 18 + Inertia.js
+- **Styling:** Tailwind CSS 4
+- **Database:** SQLite (local) / PostgreSQL (production)
+- **Build Tool:** Vite 8
 
-## Learning Laravel
+## Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP >= 8.4
+- Composer
+- Node.js >= 18
+- SQLite (for local development)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clone the repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <your-repo-url>
+cd fieldtrack
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install PHP dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Install Node dependencies
 
-## Code of Conduct
+```bash
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Set up environment variables
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edit `.env` and configure:
+- `APP_NAME=FieldTrack`
+- `DB_CONNECTION=sqlite` (default for local development)
+- Add your `GOOGLE_MAPS_API_KEY` if using maps features
+
+### 5. Generate application key
+
+```bash
+php artisan key:generate
+```
+
+### 6. Create database and run migrations
+
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
+
+### 7. Seed the database (optional)
+
+```bash
+php artisan db:seed
+```
+
+## Running the Application
+
+### Development Mode
+
+Run both Laravel and Vite dev servers concurrently:
+
+```bash
+npm run start
+```
+
+This starts:
+- Laravel server at `http://localhost:8000`
+- Vite dev server with HMR
+- Queue worker
+- Log viewer (Pail)
+
+Or run them separately:
+
+**Terminal 1 - Laravel:**
+```bash
+php artisan serve
+```
+
+**Terminal 2 - Vite:**
+```bash
+npm run dev
+```
+
+### Production Build
+
+Build frontend assets for production:
+
+```bash
+npm run build
+```
+
+Then serve with:
+
+```bash
+php artisan serve
+```
+
+## Project Structure
+
+```
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/      # API and page controllers
+│   │   └── Middleware/        # Role-based middleware
+│   └── Models/                # Eloquent models
+├── database/
+│   ├── migrations/            # Database migrations
+│   └── seeders/               # Database seeders
+├── resources/
+│   ├── js/
+│   │   ├── Components/        # Reusable React components
+│   │   ├── Layouts/           # Page layouts
+│   │   └── Pages/             # Inertia pages
+│   └── css/                   # Tailwind styles
+└── routes/
+    └── web.php                # Application routes
+```
+
+## Available Routes
+
+- `/` - Welcome page
+- `/login` - User login
+- `/register` - User registration
+- `/dashboard` - Role-based dashboard redirect
+- `/employee/dashboard` - Employee dashboard
+- `/manager/dashboard` - Manager dashboard
+
+## User Roles
+
+- **Manager:** Full access to analytics, employee management, and reports
+- **Employee:** Access to attendance tracking and customer visit logging
+
+## Testing
+
+Run tests:
+
+```bash
+php artisan test
+```
+
+## Deployment
+
+### Railway / Render
+
+See deployment guides in the `docs/` folder for platform-specific instructions.
+
+### Environment Variables for Production
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+DB_CONNECTION=pgsql
+DB_URL=postgresql://user:pass@host:5432/dbname
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+```
+
+## Common Issues
+
+### Port already in use
+If port 8000 is busy, specify a different port:
+```bash
+php artisan serve --port=8080
+```
+
+### Database connection errors
+Ensure `database/database.sqlite` exists:
+```bash
+touch database/database.sqlite
+php artisan migrate:fresh
+```
+
+### Vite build errors
+Clear node modules and reinstall:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
