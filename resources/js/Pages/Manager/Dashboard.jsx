@@ -27,6 +27,34 @@ function EmployeeMap({ apiKey, initialLocations }) {
     const [mapError, setMapError] = useState('');
     const [mapLoading, setMapLoading] = useState(true);
 
+    const updateMarkers = useCallback((locs) => {
+        if (!mapInstanceRef.current) return;
+        const currentIds = new Set(locs.map((l) => l.id));
+        Object.keys(markersRef.current).forEach((id) => {
+            if (!currentIds.has(Number(id))) { markersRef.current[id].setMap(null); delete markersRef.current[id]; }
+        });
+        locs.forEach((loc) => {
+            const position = { lat: loc.lat, lng: loc.lng };
+            if (markersRef.current[loc.id]) {
+                markersRef.current[loc.id].setPosition(position);
+            } else {
+                const marker = new window.google.maps.Marker({
+                    position, map: mapInstanceRef.current, title: loc.name,
+                    label: { text: loc.name.charAt(0).toUpperCase(), color: 'white', fontWeight: 'bold', fontSize: '13px' },
+                    icon: { path: window.google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: '#FA4032', fillOpacity: 1, strokeColor: 'rgba(254,243,226,0.6)', strokeWeight: 2.5 },
+                });
+                const infoWindow = new window.google.maps.InfoWindow({
+                    content: `<div style="font-family:system-ui;padding:8px 12px;background:#1a0500;color:white;border-radius:8px;min-width:140px">
+                        <strong style="color:#FEF3E2;font-size:13px">${loc.name}</strong><br/>
+                        <span style="font-size:11px;color:rgba(255,255,255,0.4)">${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}</span>
+                    </div>`,
+                });
+                marker.addListener('click', () => infoWindow.open(mapInstanceRef.current, marker));
+                markersRef.current[loc.id] = marker;
+            }
+        });
+    }, []);
+
     useEffect(() => {
         if (!apiKey) { setMapError('Add GOOGLE_MAPS_API_KEY to your .env to enable the live map.'); setMapLoading(false); return; }
         if (window.google?.maps) { initMap(); return; }
@@ -66,34 +94,6 @@ function EmployeeMap({ apiKey, initialLocations }) {
         setMapLoading(false);
         updateMarkers(locations);
     }
-
-    const updateMarkers = useCallback((locs) => {
-        if (!mapInstanceRef.current) return;
-        const currentIds = new Set(locs.map((l) => l.id));
-        Object.keys(markersRef.current).forEach((id) => {
-            if (!currentIds.has(Number(id))) { markersRef.current[id].setMap(null); delete markersRef.current[id]; }
-        });
-        locs.forEach((loc) => {
-            const position = { lat: loc.lat, lng: loc.lng };
-            if (markersRef.current[loc.id]) {
-                markersRef.current[loc.id].setPosition(position);
-            } else {
-                const marker = new window.google.maps.Marker({
-                    position, map: mapInstanceRef.current, title: loc.name,
-                    label: { text: loc.name.charAt(0).toUpperCase(), color: 'white', fontWeight: 'bold', fontSize: '13px' },
-                    icon: { path: window.google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: '#FA4032', fillOpacity: 1, strokeColor: 'rgba(254,243,226,0.6)', strokeWeight: 2.5 },
-                });
-                const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<div style="font-family:system-ui;padding:8px 12px;background:#1a0500;color:white;border-radius:8px;min-width:140px">
-                        <strong style="color:#FEF3E2;font-size:13px">${loc.name}</strong><br/>
-                        <span style="font-size:11px;color:rgba(255,255,255,0.4)">${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}</span>
-                    </div>`,
-                });
-                marker.addListener('click', () => infoWindow.open(mapInstanceRef.current, marker));
-                markersRef.current[loc.id] = marker;
-            }
-        });
-    }, []);
 
     if (mapError) {
         return (
